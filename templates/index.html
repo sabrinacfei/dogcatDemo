@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>與寵物對話</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #c9e0f3;
+            transition: background-color 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .pet-button {
+            font-size: 50px;
+            cursor: pointer;
+            margin: 20px;
+            background-color: #c9e0f3;
+            border: none;
+            color: #333;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #cat:hover {
+            box-shadow: 0 0 25px rgba(138, 43, 226, 0.6); /* 紫色光效 */
+        }
+        #dog:hover {
+            box-shadow: 0 0 25px rgba(74, 161, 242, 0.6); /* 藍色光效 */
+        }
+
+        #chat-box {
+            margin-top: 30px;
+            width: 60%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 10px;
+            border-radius: 10px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            animation: slideIn 0.5s ease-out;
+            font-size: 16px;
+            color: #333;
+            box-shadow: 0 0 15px rgba(0, 128, 255, 0.3);
+            width: fit-content;
+            max-width: 70%;
+        }
+
+        .message.user {
+            background-color: rgba(255, 200, 200, 0.6);
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.pet {
+            background-color: rgba(200, 200, 255, 0.6);
+            margin-right: auto;
+            text-align: left;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        #user-input {
+            width: 50%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #send-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #f8d0e1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: fixed;
+            bottom: 82px;
+            left: 80%;
+            transform: translateX(-50%);
+        }
+
+        #send-button:hover {
+            background-color: #ecbbeb;
+        }
+
+        /* 貓咪場景樣式 */
+        .cat-scene {
+            background-color: rgb(238, 191, 238);
+        }
+
+        .cat-scene #user-input {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .cat-scene #send-button {
+            background-color: black;
+            color: white;
+        }
+
+        .cat-scene #dog, .cat-scene #cat {
+            background-color: rgb(238, 191, 238);
+            border: none;
+        }
+        .cat-scene .pet-button:hover {
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.6); /* 紫色光效 */
+        }
+
+        /*狗狗場景樣式 */
+        .pet-button:hover {
+            box-shadow: 0 0 15px rgba(59, 222, 247, 0.6); /* 藍色光效 */
+        }
+        .dog-scene {
+            background-color: #c9e0f3; /* Dog background color */
+        }
+
+        .dog-scene #user-input {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .dog-scene #send-button {
+            background-color: black;
+            color: white;
+        }
+
+        .dog-scene #dog, .dog-scene #cat {
+            background-color: #c9e0f3; 
+            border: none;
+        }
+
+        .pet-button:active {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>選擇你的寵物來開始對話！</h1>
+
+    <div>
+        <button class="pet-button" id="dog">🐶</button>
+        <button class="pet-button" id="cat">🐱</button>
+    </div>
+
+    <div id="chat-box"></div>
+
+    <input type="text" id="user-input" placeholder="問我任何問題..." />
+    <button id="send-button">發送訊息</button>
+
+    <script>
+        const dogButton = document.getElementById('dog');
+        const catButton = document.getElementById('cat');
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        let selectedPet = '';
+
+        // 清除對話框並顯示選擇的寵物
+        function handlePetClick(pet) {
+            selectedPet = pet;
+            chatBox.innerHTML = '';  
+
+            const petName = pet === 'dog' ? '狗狗-麻吉' : '貓咪－米菲';
+            const message = document.createElement('div');
+            message.classList.add('message', 'pet');
+            message.textContent = `你選擇了${petName}！現在可以開始對話了❤️`;
+            chatBox.appendChild(message);
+
+            if (pet === 'dog') {
+                document.body.classList.add('dog-scene');
+                document.body.classList.remove('cat-scene');
+            } else if (pet === 'cat') {
+                document.body.classList.add('cat-scene');
+                document.body.classList.remove('dog-scene');
+            }
+        }
+
+        // 發送用戶訊息並獲得回應
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage || !selectedPet) {
+                return;
+            }
+
+            const message = document.createElement('div');
+            message.classList.add('message', 'user');
+            message.textContent = `你: ${userMessage}`;
+            chatBox.appendChild(message);
+
+            userInput.value = '';
+
+            fetch('/generate_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: userMessage,
+                    pet: selectedPet
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseMessage = document.createElement('div');
+                responseMessage.classList.add('message', 'pet');
+                responseMessage.textContent = `${selectedPet === 'dog' ? '狗狗' : '貓咪'}: ${data.response}`;
+                chatBox.appendChild(responseMessage);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        dogButton.addEventListener('click', () => handlePetClick('dog'));
+        catButton.addEventListener('click', () => handlePetClick('cat'));
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
